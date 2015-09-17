@@ -1,0 +1,168 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>myMainScript</title>
+      <meta name="generator" content="MATLAB 7.7">
+      <meta name="date" content="2015-08-30">
+      <meta name="m-file" content="myMainScript"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#1">MyMainScript</a></li>
+               <li><a href="#2">Applying unsharpMask on lionCrop</a></li>
+               <li><a href="#3">Applying unsharpMask on superMoonCrop</a></li>
+            </ul>
+         </div>
+         <h2>MyMainScript<a name="1"></a></h2><pre class="codeinput">tic;
+</pre><h2>Applying unsharpMask on lionCrop<a name="2"></a></h2><pre class="codeinput">img = load(<span class="string">'../data/lionCrop.mat'</span>);
+im=img.imageOrig;
+out=myUnsharpMasking(im,5,1.875,1.9);
+iptsetpref(<span class="string">'ImshowAxesVisible'</span>,<span class="string">'on'</span>);
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+subplot(1,2,1);
+imshow(im), colorbar;
+title(<span class="string">'Input Image'</span>)
+subplot(1,2,2);
+imshow(out), colorbar;
+name = strcat([<span class="string">'../images/output'</span> <span class="string">'lionCrop'</span>]);
+file_name = strcat([name <span class="string">'.png'</span>])
+imwrite(out,file_name);
+title(<span class="string">'Output Image'</span>);
+</pre><pre class="codeoutput">
+file_name =
+
+../images/outputlionCrop.png
+
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <h2>Applying unsharpMask on superMoonCrop<a name="3"></a></h2><pre class="codeinput">img = load(<span class="string">'../data/superMoonCrop.mat'</span>);
+im=img.imageOrig;
+out=myUnsharpMasking(im,15,1.275,-1);
+iptsetpref(<span class="string">'ImshowAxesVisible'</span>,<span class="string">'on'</span>);
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+subplot(1,2,1);
+imshow(im), colorbar;
+title(<span class="string">'Input Image'</span>)
+subplot(1,2,2);
+imshow(out), colorbar;
+name = strcat([<span class="string">'../images/output'</span> <span class="string">'superMoonCrop'</span>]);
+file_name = strcat([name <span class="string">'.png'</span>])
+imwrite(out,file_name);
+title(<span class="string">'Output Image'</span>);
+
+toc;
+</pre><pre class="codeoutput">
+file_name =
+
+../images/outputsuperMoonCrop.png
+
+Elapsed time is 1.707150 seconds.
+</pre><img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <p class="footer"><br>
+            Published with MATLAB&reg; 7.7<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% MyMainScript
+
+tic;
+%% Applying unsharpMask on lionCrop
+img = load('../data/lionCrop.mat');
+im=img.imageOrig;
+out=myUnsharpMasking(im,5,1.875,1.9);
+iptsetpref('ImshowAxesVisible','on');
+figure('units','normalized','outerposition',[0 0 1 1])
+subplot(1,2,1);
+imshow(im), colorbar;
+title('Input Image')
+subplot(1,2,2);
+imshow(out), colorbar;
+name = strcat(['../images/output' 'lionCrop']);
+file_name = strcat([name '.png'])
+imwrite(out,file_name);
+title('Output Image');
+
+%% Applying unsharpMask on superMoonCrop
+img = load('../data/superMoonCrop.mat');
+im=img.imageOrig;
+out=myUnsharpMasking(im,15,1.275,-1);
+iptsetpref('ImshowAxesVisible','on');
+figure('units','normalized','outerposition',[0 0 1 1])
+subplot(1,2,1);
+imshow(im), colorbar;
+title('Input Image')
+subplot(1,2,2);
+imshow(out), colorbar;
+name = strcat(['../images/output' 'superMoonCrop']);
+file_name = strcat([name '.png'])
+imwrite(out,file_name);
+title('Output Image');
+
+toc; 
+##### SOURCE END #####
+-->
+   </body>
+</html>
