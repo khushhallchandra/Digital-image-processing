@@ -1,0 +1,166 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>myMainScript</title>
+      <meta name="generator" content="MATLAB 7.7">
+      <meta name="date" content="2015-09-20">
+      <meta name="m-file" content="myMainScript"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#1">MyMainScript</a></li>
+               <li><a href="#2">Processing baboonColor.png</a></li>
+            </ul>
+         </div>
+         <h2>MyMainScript<a name="1"></a></h2><pre class="codeinput">tic;
+</pre><h2>Processing baboonColor.png<a name="2"></a></h2><pre class="codeinput"><span class="comment">%img = load('../data/baboonColor.mat');InputImage = imread('../data/baboonColor.png');</span>
+im= imread(<span class="string">'../data/baboonColor.png'</span>);
+hr = [ 5 8 ];
+[x y]=size(im);
+<span class="keyword">for</span> i=1:2
+disp([<span class="string">'Value of hr (Note: I have varied  hr and hs and threshold is hold constant  Have done this so to show the difference, in the image for different hr,hs value) ='</span> num2str(hr(i))]);
+[out] =  myMeanShiftSegmentation( im, 40, hr(i), 3 );
+iptsetpref(<span class="string">'ImshowAxesVisible'</span>,<span class="string">'on'</span>);
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+
+subplot(1,2,1);
+imshow(mat2gray(im)), colorbar;
+title(<span class="string">'Input Image'</span>)
+
+subplot(1,2,2);
+imshow(mat2gray(out)), colorbar;
+title(<span class="string">' Output image , segmented '</span>);
+<span class="comment">% Note: I have varied  hr and hs and threshold is hold constant</span>
+<span class="comment">% Have done this so to show the difference, in the image for different</span>
+<span class="comment">% hr,hs value</span>
+name = strcat([<span class="string">'../images/outputForHR'</span> num2str(hr(i)) <span class="string">'.'</span>]);
+file_name = strcat([name <span class="string">'png'</span>])
+imwrite(mat2gray(out),file_name);
+<span class="keyword">end</span>
+
+toc;
+</pre><pre class="codeoutput">Value of hr (Note: I have varied  hr and hs and threshold is hold constant  Have done this so to show the difference, in the image for different hr,hs value) =5
+Value of hs =40
+Value of hr =5
+Value of threshold (Note : This will control number of iteration) =3
+
+file_name =
+
+../images/outputForHR5.png
+
+Value of hr (Note: I have varied  hr and hs and threshold is hold constant  Have done this so to show the difference, in the image for different hr,hs value) =8
+Value of hs =40
+Value of hr =8
+Value of threshold (Note : This will control number of iteration) =3
+
+file_name =
+
+../images/outputForHR8.png
+
+Elapsed time is 156.718173 seconds.
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <p class="footer"><br>
+            Published with MATLAB&reg; 7.7<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% MyMainScript
+
+tic;
+
+%% Processing baboonColor.png
+%img = load('../data/baboonColor.mat');InputImage = imread('../data/baboonColor.png');
+im= imread('../data/baboonColor.png');
+hr = [ 5 8 ];
+[x y]=size(im);
+for i=1:2
+disp(['Value of hr (Note: I have varied  hr and hs and threshold is hold constant  Have done this so to show the difference, in the image for different hr,hs value) =' num2str(hr(i))]);
+[out] =  myMeanShiftSegmentation( im, 40, hr(i), 3 );
+iptsetpref('ImshowAxesVisible','on');
+figure('units','normalized','outerposition',[0 0 1 1])
+
+subplot(1,2,1);
+imshow(mat2gray(im)), colorbar;
+title('Input Image')
+
+subplot(1,2,2);
+imshow(mat2gray(out)), colorbar;
+title(' Output image , segmented ');
+% Note: I have varied  hr and hs and threshold is hold constant
+% Have done this so to show the difference, in the image for different
+% hr,hs value
+name = strcat(['../images/outputForHR' num2str(hr(i)) '.']);
+file_name = strcat([name 'png'])
+imwrite(mat2gray(out),file_name);
+end
+
+toc;
+##### SOURCE END #####
+-->
+   </body>
+</html>

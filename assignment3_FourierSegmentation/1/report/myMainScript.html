@@ -1,0 +1,324 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>myMainScript</title>
+      <meta name="generator" content="MATLAB 7.7">
+      <meta name="date" content="2015-09-20">
+      <meta name="m-file" content="myMainScript"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#1">MyMainScript</a></li>
+               <li><a href="#2">Processing lionCrop</a></li>
+               <li><a href="#4">RMSD</a></li>
+               <li><a href="#7">RADIUS R</a></li>
+            </ul>
+         </div>
+         <h2>MyMainScript<a name="1"></a></h2><pre class="codeinput">tic;
+</pre><h2>Processing lionCrop<a name="2"></a></h2><pre class="codeinput">img = load(<span class="string">'../data/boat.mat'</span>);
+im=(img.imageOrig);
+
+[x y]=size(im);
+<span class="comment">%randn() gives random numbers drawn independently from</span>
+<span class="comment">% a Gaussian with mean 0 and standard deviation 1.</span>
+
+fArray = [.95, 1 ,1.05];
+d = 0.34;
+<span class="keyword">for</span> i=1:3
+</pre><pre class="codeinput">intensityRange = max(max(im)) - min(min(im));
+gaussNoise = 0.1*intensityRange*randn(size(im));
+corrupt = im + gaussNoise;
+[out] = myButterworthFiltering(corrupt,d*fArray(i));
+</pre><h2>RMSD<a name="4"></a></h2>
+         <p>Used the method given in slides for calculating the RMSD</p><pre class="codeinput">diffImage = double(out) - im;
+RMSD = sqrt(sum(sum(diffImage.^2))/(x*y));
+disp([<span class="string">'RMSD ='</span> num2str(RMSD)]);
+
+iptsetpref(<span class="string">'ImshowAxesVisible'</span>,<span class="string">'on'</span>);
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+subplot(1,3,1);
+imshow(uint8(im)), colorbar;
+title(<span class="string">'Input Image'</span>)
+subplot(1,3,2);
+imshow(uint8(corrupt)), colorbar;
+name = strcat([<span class="string">'../images/output'</span> <span class="string">'boat'</span>]);
+file_name = strcat([name <span class="string">'.png'</span>])
+imwrite(out,file_name);
+title(<span class="string">'Corrupted Image'</span>);
+
+subplot(1,3,3);
+imshow(mat2gray(out)), colorbar;
+title(<span class="string">'Output Image'</span>);
+name = strcat([<span class="string">'../images/output'</span> num2str(fArray(i)) <span class="string">'.'</span>]);
+file_name = strcat([name <span class="string">'png'</span>])
+imwrite(mat2gray(out),file_name);
+</pre><pre class="codeoutput">RMSD =13.6119
+
+file_name =
+
+../images/outputboat.png
+
+
+file_name =
+
+../images/output0.95.png
+
+</pre><img vspace="5" hspace="5" src="myMainScript_01.png" alt=""> <pre class="codeoutput">RMSD =14.1058
+
+file_name =
+
+../images/outputboat.png
+
+
+file_name =
+
+../images/output1.png
+
+</pre><img vspace="5" hspace="5" src="myMainScript_02.png" alt=""> <pre class="codeoutput">RMSD =14.6296
+
+file_name =
+
+../images/outputboat.png
+
+
+file_name =
+
+../images/output1.05.png
+
+</pre><img vspace="5" hspace="5" src="myMainScript_03.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+
+percent = [88,91,94,97,99];
+radius = [1.3,2.5,6,14,62];
+
+<span class="keyword">for</span> i=1:5
+</pre><pre class="codeinput">	F=fftshift(fft2(im));
+	e = sum(sum((abs(F)).^2));
+</pre><h2>RADIUS R<a name="7"></a></h2>
+         <p>This creates a circular patch</p><pre class="codeinput">    R=radius(i);
+    [rr cc] = meshgrid(1:x);
+    C = sqrt((rr-x/2).^2+(cc-x/2).^2)&lt;=R;
+
+	filtered = F.*C;
+
+	<span class="comment">%Calculate Percentage Energy in disked image</span>
+	energy = sum(sum(abs(filtered).^2));
+	percentage = energy/e*100;
+	disp([<span class="string">'Percentage = '</span> num2str(percentage)]);
+	inverseImage = ifft2(filtered);
+	out=sqrt(real(inverseImage).^2+imag(inverseImage).^2);
+    iptsetpref(<span class="string">'ImshowAxesVisible'</span>,<span class="string">'on'</span>);
+    figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+    mainFig= subplot(1,2,1);
+    imshow(mat2gray(im)), colorbar;
+    title(<span class="string">'Input Image'</span>);
+    subplot(1,2,2);
+    imshow(mat2gray(out)), colorbar;
+    title([<span class="string">'Radius Size = '</span> num2str(radius(i))]);
+    name = strcat([<span class="string">'../images/energyPercent'</span> num2str(percent(i)) <span class="string">'.'</span>]);
+    file_name = strcat([name <span class="string">'png'</span>])
+    imwrite(mat2gray(out),file_name);
+	<span class="comment">%RMSD  calculation</span>
+	diffImage = out - im;
+	RMSD = sqrt(sum(sum(diffImage.^2))/(x*y));
+	disp([<span class="string">'RMSD ='</span> num2str(RMSD)]);
+</pre><pre class="codeoutput">Percentage = 1.6991
+
+file_name =
+
+../images/energyPercent88.png
+
+RMSD =123.052
+</pre><img vspace="5" hspace="5" src="myMainScript_04.png" alt=""> <pre class="codeoutput">Percentage = 92.6178
+
+file_name =
+
+../images/energyPercent91.png
+
+RMSD =36.2455
+</pre><img vspace="5" hspace="5" src="myMainScript_05.png" alt=""> <pre class="codeoutput">Percentage = 94.7715
+
+file_name =
+
+../images/energyPercent94.png
+
+RMSD =30.9656
+</pre><img vspace="5" hspace="5" src="myMainScript_06.png" alt=""> <pre class="codeoutput">Percentage = 97.0005
+
+file_name =
+
+../images/energyPercent97.png
+
+RMSD =23.5782
+</pre><img vspace="5" hspace="5" src="myMainScript_07.png" alt=""> <pre class="codeoutput">Percentage = 99.061
+
+file_name =
+
+../images/energyPercent99.png
+
+RMSD =13.3044
+</pre><img vspace="5" hspace="5" src="myMainScript_08.png" alt=""> <pre class="codeinput"><span class="keyword">end</span>
+
+toc;
+</pre><pre class="codeoutput">Elapsed time is 23.749446 seconds.
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.7<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+%% MyMainScript
+
+tic;
+%% Processing lionCrop
+img = load('../data/boat.mat');
+im=(img.imageOrig);
+ 
+[x y]=size(im);
+%randn() gives random numbers drawn independently from 
+% a Gaussian with mean 0 and standard deviation 1.
+
+fArray = [.95, 1 ,1.05];
+d = 0.34;
+for i=1:3
+intensityRange = max(max(im)) - min(min(im));
+gaussNoise = 0.1*intensityRange*randn(size(im));
+corrupt = im + gaussNoise;
+[out] = myButterworthFiltering(corrupt,d*fArray(i));
+
+%% RMSD
+% Used the method given in slides for calculating the RMSD
+diffImage = double(out) - im;
+RMSD = sqrt(sum(sum(diffImage.^2))/(x*y));
+disp(['RMSD =' num2str(RMSD)]);
+
+iptsetpref('ImshowAxesVisible','on');
+figure('units','normalized','outerposition',[0 0 1 1])
+subplot(1,3,1);
+imshow(uint8(im)), colorbar;
+title('Input Image')
+subplot(1,3,2);
+imshow(uint8(corrupt)), colorbar;
+name = strcat(['../images/output' 'boat']);
+file_name = strcat([name '.png'])
+imwrite(out,file_name);
+title('Corrupted Image');
+
+subplot(1,3,3);
+imshow(mat2gray(out)), colorbar;
+title('Output Image');
+name = strcat(['../images/output' num2str(fArray(i)) '.']);
+file_name = strcat([name 'png'])
+imwrite(mat2gray(out),file_name);
+
+end
+
+percent = [88,91,94,97,99];
+radius = [1.3,2.5,6,14,62];
+
+for i=1:5
+	
+	F=fftshift(fft2(im));		
+	e = sum(sum((abs(F)).^2));
+     
+    %% RADIUS R
+    % This creates a circular patch
+    R=radius(i);
+    [rr cc] = meshgrid(1:x);
+    C = sqrt((rr-x/2).^2+(cc-x/2).^2)<=R;
+
+	filtered = F.*C;
+	
+	%Calculate Percentage Energy in disked image
+	energy = sum(sum(abs(filtered).^2));
+	percentage = energy/e*100;
+	disp(['Percentage = ' num2str(percentage)]);
+	inverseImage = ifft2(filtered);
+	out=sqrt(real(inverseImage).^2+imag(inverseImage).^2);	
+    iptsetpref('ImshowAxesVisible','on');
+    figure('units','normalized','outerposition',[0 0 1 1])
+    mainFig= subplot(1,2,1);
+    imshow(mat2gray(im)), colorbar;
+    title('Input Image');
+    subplot(1,2,2);
+    imshow(mat2gray(out)), colorbar;
+    title(['Radius Size = ' num2str(radius(i))]);
+    name = strcat(['../images/energyPercent' num2str(percent(i)) '.']);
+    file_name = strcat([name 'png'])
+    imwrite(mat2gray(out),file_name);
+	%RMSD  calculation
+	diffImage = out - im;
+	RMSD = sqrt(sum(sum(diffImage.^2))/(x*y));
+	disp(['RMSD =' num2str(RMSD)]);
+end
+
+toc;
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
