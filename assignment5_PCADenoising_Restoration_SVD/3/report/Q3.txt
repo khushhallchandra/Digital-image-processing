@@ -1,0 +1,2 @@
+If H=0 for any frequency then F will blow up, there by causing difficult to get F. 
+	This some problem arises in the case of two d image, as above. The only difference here is that f,g,h are dependent on two variables
