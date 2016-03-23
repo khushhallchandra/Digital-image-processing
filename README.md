@@ -1,2 +1,2 @@
 # Digital-image-processing
-This repo contains assignment for the course CS663
+This repo contains assignment for the course CS663.
